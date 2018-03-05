@@ -6,6 +6,7 @@ extern crate cgmath;
 mod system;
 mod overworldmap;
 mod party_manager;
+mod battle;
 use system::System;
 
 fn main() {

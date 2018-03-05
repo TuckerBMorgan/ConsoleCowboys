@@ -1,6 +1,7 @@
 use rand;
 use rand::distributions::{Range, Sample};
 
+#[derive(Clone)]
 pub struct Character {
     pub name: String,
     //current is the active in use value, total is the highest it can go without some other system in place
@@ -41,23 +42,23 @@ impl Character{
     pub fn create_random_character() -> Character {
         let mut rng = rand::thread_rng();
 
-        let mut num_range = Range::new(0, 13);
+        let mut num_range = Range::new(0, 16);
         let first_name = num_range.sample(&mut rng);
         let second_name = num_range.sample(&mut rng);
 
-        let first_names = ["Jean-Louis", "George", "诸葛亮", "Freddie", "Billy-Joe", "Robert",  "Uylsses", "Simon",   "Георгий", "Никита", "იოსებ",    "Ἀλέξανδρος", "Toussaint"];
-        let last_names =  ["육군 원수",     "올리언즈", "孔明",   "Patton",  "The Great", "Marquis", "Grant",   "Bolivar", "Жуков",   "Хрущёв", "სტალინი", "Μέγας",       "Louverture"];
+        let first_names = ["Jean-Louis", "George", "诸葛亮", "Freddie", "Billy-Joe", "Robert",  "Uylsses", "Simon",   "Георгий", "Никита", "იოსებ",    "Ἀλέξανδρος", "Toussaint",  "이",   "嬴", "秦"];
+        let last_names =  ["육군 원수",     "올리언즈", "孔明",   "Patton",  "The Great", "Marquis", "Grant",   "Bolivar", "Жуков",   "Хрущёв", "სტალინი", "Μέγας",       "Louverture", "순신", "政", "始皇"];
         let random_name = first_names[first_name].to_owned() + " " + last_names[second_name];
         
         
         Character {
             name: random_name,
-            current_health: 100,
-            total_health: 100,
-            current_attack: 100,
-            total_attack: 100,
-            current_speed: 100,
-            total_speed: 100
+            current_health: 5,
+            total_health: 5,
+            current_attack: 2,
+            total_attack: 2,
+            current_speed: 2,
+            total_speed: 2
         }
     }
 

@@ -270,15 +270,17 @@ impl OverworldMap {
         //cleanup formatting
         OverworldMap::draw_header();
     }
-
+    
+    #[inline]
     pub fn draw_header() {
-       for _ in 0..MAP_Y_SIZE {
+       for _ in 0..MAP_X_SIZE {
            OverworldMap::draw_top_or_bottom();
        } 
        //formatting cleanup
        print!("+\n");
     }
-
+    
+    #[inline]
     pub fn draw_row(&self, row: usize) {
         for col_num in 0..MAP_X_SIZE {
             print!("| {} ", self.map[col_num][row].draw());
@@ -288,6 +290,7 @@ impl OverworldMap {
     }
 
     //the bottom and top of the sqaure are the same so only need one call
+    #[inline]
     pub fn draw_top_or_bottom() {
         print!("+ - ");
     }

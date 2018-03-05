@@ -46,6 +46,7 @@ impl MapController {
         ExitCodes::Ok
     }
 
+    #[inline]
     pub fn menu(&mut self) -> ExitCodes{
         println!("Which mode would you like to be in");
         println!("1. Movement");
@@ -76,6 +77,7 @@ impl MapController {
         ExitCodes::Exit
     }
 
+    #[inline]
     pub fn movement_mode(&mut self) {
         let directions = OverworldMap::find_available_movement_direction_for_party(self.map.get_party_position());
         for dir in directions {

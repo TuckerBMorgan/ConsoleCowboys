@@ -25,11 +25,9 @@ impl PartyView {
                 println!("{} Lead : {}", count, v.name);
             }
             else {
-                println!("Party Member: {}", v.name);
+                println!("{} Party Member: {}", count, v.name);
             }
-            println!("Health: {}", v.total_health);
-            println!("Attack: {}", v.total_attack);
-            println!("Speed: {}", v.total_speed);
+            
             count += 1;
         }
         println!("-=========================-");

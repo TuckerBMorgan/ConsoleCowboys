@@ -1,17 +1,16 @@
-use party_manager::{Caravan,Character, RosterView,PartyView};
+use party_manager::{Caravan,Character, PartyView};
 use system::ExitCodes;
+use std::collections::HashMap;
 use std::io;
 
 enum PartyMangerControllerState {
     MenuState,
-    RosterViewState,
     PartyViewState,
 }
 
 pub struct PartyManagerController {
     party_manager_controller_state: PartyMangerControllerState,
     caravan: Caravan,
-    roster_view: RosterView,
     party_view: PartyView,
 }
 
@@ -19,17 +18,23 @@ impl PartyManagerController {
     pub fn new() -> PartyManagerController {
         
         //test character, will work on this flow more after battle is fleshed out
-        let character = Character::new(String::from("Joachim Murat"), 100, 100, 100);
+        let character = Character::new(String::from("Joachim Murat"), 5, 2, 2);
         let mut caravan = Caravan::new(character);
 
-        for _ in 0..10 {
+        for i in 0..10 {
             let character = Character::create_random_character();
-            caravan.add_party_member(character.name.clone(), character);
+            if !caravan.is_party_member(&character.name) {
+                if i < 5 {
+                    caravan.add_to_active_roster(character.name.clone());
+                }
+                caravan.add_party_member(character.name.clone(), character);
+            }
+            
         }
+
         PartyManagerController {
             party_manager_controller_state: PartyMangerControllerState::MenuState,
             caravan,
-            roster_view: RosterView::new(),
             party_view: PartyView::new()
         }
     }
@@ -44,8 +49,7 @@ impl PartyManagerController {
                 println!("What do you want to in the party manager");
                 println!("1. Exit to Map");
                 println!("2. Exit game");
-                println!("3. To Roster View");
-                println!("4. To Party View");
+                println!("3. To Party View");
 
                 let mut input = String::new();
                 match io::stdin().read_line(&mut input) {
@@ -58,9 +62,6 @@ impl PartyManagerController {
                             return ExitCodes::Exit;
                         }
                         else if input == "3" {
-                            self.set_state(PartyMangerControllerState::RosterViewState);
-                        }
-                        else if input == "4" {
                             self.set_state(PartyMangerControllerState::PartyViewState);
                         }
                     }
@@ -72,26 +73,33 @@ impl PartyManagerController {
             },
             PartyMangerControllerState::PartyViewState => {
                 self.party_view();
-            },
-            PartyMangerControllerState::RosterViewState => {
-                self.roster_view();
             }
         }
-    //    self.roster_view.update(&mut self.caravan);
-        self.roster_view.draw(&self.caravan);
 
         ExitCodes::Ok
     }
 
     #[inline]
-    pub fn party_view(&mut self) -> ExitCodes {
+    //this acts as the menu and controller for the party view, which is every character that the player has in their caravan
+    pub fn party_view(&mut self) {
         self.party_view.draw(&self.caravan);
-        ExitCodes::Ok
+        println!("What do you want to do in Party View");
+        println!("1. Exit to Party Manager");
+        let mut input = String::new();
+        match io::stdin().read_line(&mut input) {
+            Ok(_n) => {
+                let input = input.trim();
+                if input == "1" {
+                    self.set_state(PartyMangerControllerState::MenuState);
+                }
+            }
+            Err(e) => {
+                panic!("{} HEMIDALL ERROR with the input for party view party manager controller", e);
+            }
+        }
     }
 
-    #[inline]
-    pub fn roster_view(&mut self) -> ExitCodes {
-        self.roster_view.draw(&self.caravan);
-        ExitCodes::Ok
+    pub fn clone_active_roster(&self) -> HashMap<String, Character> {
+        self.caravan.create_clone_of_active_roster()
     }
 }

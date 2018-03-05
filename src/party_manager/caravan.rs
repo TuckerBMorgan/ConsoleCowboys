@@ -41,6 +41,9 @@ impl Caravan {
         &self.active_roster
     }
 
+    pub fn is_party_member(&self, name: &String) -> bool {
+        self.party_members.contains_key(name)
+    }
 
     //this will look for the index of the name passed in and then remove it from the active roster
     //list
@@ -69,5 +72,15 @@ impl Caravan {
 
     pub fn get_lead(&self) -> String {
         self.lead.clone()
+    }
+
+    //this will copy the characters in the active roster, THIS IS VERY EXSPENSIVE
+    //TODO: NOT HAVE THIS BE EXSPENSIVE
+    pub fn create_clone_of_active_roster(&self) -> HashMap<String, Character> {
+        let mut party_copy = HashMap::new();
+        for name in &self.active_roster {
+            party_copy.insert(name.clone(), self.party_members.get(name).unwrap().clone());
+        }
+        party_copy
     }
 }

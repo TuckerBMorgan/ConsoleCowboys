@@ -1,5 +1,6 @@
 use overworldmap::MapController;
 use party_manager::PartyManagerController;
+use battle::BattleController;
 use std::io;
 
 
@@ -13,10 +14,13 @@ enum SystemState {
     Exit
 }
 
+#[derive(Debug)]
 pub enum ExitCodes {
     Ok,//call the same controller again
     ToMapController,
     ToPartyManagerController,
+    //battlefield x size, battle y size, this will set up the battle field, and move to the battlecontroller
+    ToBattle(usize, usize),
     Exit
 }
 
@@ -24,7 +28,8 @@ pub enum ExitCodes {
 pub struct System {
     system_state: SystemState,
     map_controller: MapController,
-    party_manager_controller: PartyManagerController
+    party_manager_controller: PartyManagerController,
+    battle_controller: BattleController
 }
 
 impl System {
@@ -32,7 +37,8 @@ impl System {
         System {
             system_state: SystemState::MainMenu,
             map_controller: MapController::new(),
-            party_manager_controller: PartyManagerController::new()
+            party_manager_controller: PartyManagerController::new(),
+            battle_controller: BattleController::new()
         }
     }
 
@@ -58,7 +64,8 @@ impl System {
                             let input = input.trim();
                             if input == "New game" {
                                 self.new_game();
-                                self.set_state(SystemState::PartyManager);
+                                exit_code = ExitCodes::ToBattle(10, 10);
+                                //self.set_state(SystemState::PartyManager);
                             }
                         }, 
                         Err(e) => {
@@ -68,7 +75,6 @@ impl System {
                 },
                 SystemState::Map => {
                     exit_code = self.map_controller.update();
-                    
                 },
                 SystemState::PartyManager => {
                     exit_code =  self.party_manager_controller.update();
@@ -76,15 +82,17 @@ impl System {
                 SystemState::Exit => {
                     break;
                 },
-                _ => {
-
-                }
+                SystemState::Battle => {
+                    exit_code = self.battle_controller.update();
+                },
+                _ => {}
             }
             self.process_exit_code(exit_code);
         }
     }
 
     //trying to keep the main loop unclutered 
+    #[inline]
     pub fn process_exit_code(&mut self, exit_code: ExitCodes) {
         match exit_code {
             ExitCodes::ToMapController => {
@@ -95,10 +103,14 @@ impl System {
             },
             ExitCodes::Exit => {
                 self.set_state(SystemState::Exit);
-            }
-            _ => {
-
-            }
+            },
+            ExitCodes::ToBattle(x, y) => {
+                self.battle_controller.new_battle(x, y, self.party_manager_controller.clone_active_roster());
+                self.set_state(SystemState::Battle);
+            },
+            ExitCodes::Ok => {
+                //just removing the OK code from any pattern 
+            },
         }
     }
 }
