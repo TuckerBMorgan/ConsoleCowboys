@@ -1,2 +1,2 @@
-pub mod move_command;
-pub use battle::battle_commands::move_command::MoveCommand;
+pub mod movement_mode;
+pub use battle::battle_commands::movement_mode::MovementMode;

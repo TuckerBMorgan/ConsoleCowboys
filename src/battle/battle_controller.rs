@@ -2,7 +2,7 @@ use battle::Battlefield;
 use party_manager::Character;
 use std::collections::HashMap;
 use system::ExitCodes;
-use battle::battle_commands::MoveCommand;
+use battle::battle_commands::MovementMode;
 use std::io;
 
 
@@ -23,7 +23,7 @@ pub struct BattleController {
     player_characters: HashMap<String, Character>,//all character the player are using
     ai_characters: HashMap<String, Character>,//the AI is suing
     current_team: CurrentTeam,//who is going
-    move_command: MoveCommand,//Controller for move actions
+    movement_mode: MovementMode,//Controller for move actions
     battle_controller_state: BattleControllerState
 }
 
@@ -35,7 +35,7 @@ impl BattleController {
             player_characters: HashMap::new(), 
             ai_characters: HashMap::new(),
             current_team: CurrentTeam::Player,
-            move_command: MoveCommand::new(),
+            movement_mode: MovementMode::new(),
             battle_controller_state: BattleControllerState::MainState
         }
     }
@@ -68,7 +68,7 @@ impl BattleController {
                 self.ask_for_player_input();
             },
             BattleControllerState::MovementState => {
-                self.move_command.execute_move_command(&mut self.battlefield);
+                self.movement_mode.execute_movement_mode(&mut self.battlefield);
             }
         }
 
@@ -88,10 +88,10 @@ impl BattleController {
             Ok(_n) => {
                 input = input_raw.trim();
                 if input == "1" {
-                    let result = MoveCommand::set_up_move_command(self.get_current_team());
+                    let result = MovementMode::set_up_movement_mode(self.get_current_team());
                     match result {
                         Some(character_name) => {
-                            self.move_command.set_character_name(character_name);
+                            self.movement_mode.set_character_name(character_name);
                         },
                         None => {
                             

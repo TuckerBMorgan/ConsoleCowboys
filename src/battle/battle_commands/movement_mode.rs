@@ -1,16 +1,18 @@
 use std::io;
 use std::collections::HashMap;
-use battle::Battlefield;
 
+use cgmath::Vector2;
+
+use battle::Battlefield;
 use party_manager::Character;
 
-pub struct MoveCommand {
+pub struct MovementMode {
     character_name: String,
 }
 
-impl MoveCommand {
-    pub fn new() -> MoveCommand {
-        MoveCommand {
+impl MovementMode {
+    pub fn new() -> MovementMode {
+        MovementMode {
             character_name: String::from("")
         }
     }
@@ -19,11 +21,45 @@ impl MoveCommand {
         self.character_name = character_name;
     }
 
-    pub fn execute_move_command(&self, battlefield: &mut Battlefield) {
+    pub fn execute_movement_mode(&self, battlefield: &mut Battlefield) {
+        let pos = battlefield.get_location_of_character(&self.character_name);
         
+        if pos.is_none() {
+            return;
+        }
+        let pos = pos.unwrap();
+        let size = battlefield.get_battlefield_size();
+
+        let mut possibles = vec![pos];
+        
+        if pos.y > 0 {
+            possibles.push(Vector2::new(pos.x, pos.y - 1));
+        }
+
+        if pos.x > 0 {
+            possibles.push(Vector2::new(pos.x - 1, pos.y));
+        }
+
+        if pos.x < size.x - 1 {
+            possibles.push(Vector2::new(pos.x + 1, pos.y));
+        }
+
+        if pos.y < size.y - 1 {
+            possibles.push(Vector2::new(pos.x, pos.y + 1));
+        }
+        
+        if possibles.len() == 0 {
+            println!("{} has no tiles to move to, please change characters", self.character_name);
+            return;
+        }
+        
+        for tiles  in possibles {
+
+        }
+
     }
 
-    pub fn set_up_move_command(player_character: &HashMap<String, Character>) -> Option<String>{
+    pub fn set_up_movement_mode(player_character: &HashMap<String, Character>) -> Option<String>{
         //we look at all characters that have some speed left this turn
         //show them to the player
         //they pick the one they want to move, and then ask them to 

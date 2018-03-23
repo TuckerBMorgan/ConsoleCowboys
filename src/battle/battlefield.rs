@@ -54,15 +54,34 @@ impl Battlefield {
     //will try to look up the postion of the character with "character_name"
     //will return the grid position if yes
     //will return None if the character is not there
-    pub fn get_location_of_character(&self, character_name: String) -> Option<Vector2<usize>>{
+    pub fn get_location_of_character(&self, character_name: &String) -> Option<Vector2<usize>>{
         //NOTE: This is done this way due to the fact that .get will always return a Option<&T>, and not Option<T> which is what I want
-        let tmp = self.character_positions.get(&character_name);
+        let tmp = self.character_positions.get(character_name);
         match tmp {
             Some(value) => {
                 return Some(*value);
             }
             None => {
                 return None;
+            }
+        }
+    }
+
+    //other then the place_character function, this must be the only way to
+    //change a characters position on the map, it will enforce board rules
+    pub fn move_characrter(&mut self, character_name: &String, direction: Vector2<i32>) {
+        let current = self.character_positions.remove(character_name);
+
+        match current {
+            Some(current) => {
+                //for now this is just a simple update of the characters
+                //current positions, but this should be the primary way 
+                //in which movement based events are triggered
+
+            },
+            //TODO: figure how when this might happen, and handle in gracefully
+            None => {
+                println!("{} is not a character in the ");
             }
         }
     }
@@ -103,5 +122,9 @@ impl Battlefield {
     //the bottom and top of the sqaure are the same so only need one call
     pub fn draw_top_or_bottom() {
         print!("+ - ");
+    }
+
+    pub fn get_battlefield_size(&self) -> Vector2<usize> {
+        Vector2::new(self.tiles.len(), self.tiles[0].len())
     }
 }
